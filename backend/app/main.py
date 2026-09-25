@@ -65,6 +65,16 @@ def update_profile(
     return current_user
 
 
+@app.post("/auth/change-password", status_code=status.HTTP_204_NO_CONTENT)
+def change_password(
+    payload: schemas.ChangePassword,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db),
+):
+    current_user.password_hash = auth.hash_password(payload.new_password)
+    db.commit()
+
+
 @app.get("/users/{user_id}", response_model=schemas.UserProfile)
 def read_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id == user_id).first()

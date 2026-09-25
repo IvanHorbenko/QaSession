@@ -50,3 +50,18 @@ async function updateProfile(token, payload) {
   }
   return res.json();
 }
+
+async function changePassword(token, payload) {
+  const res = await fetch(`${API_BASE_URL}/auth/change-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.detail || "Password update failed");
+  }
+}
