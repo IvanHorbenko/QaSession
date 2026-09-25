@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>QA Session Demo — Register</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="card">
+    <h1>Create account</h1>
+    <form id="register-form">
+      <label for="first_name">First name</label>
+      <input type="text" id="first_name" name="first_name" required />
+
+      <label for="last_name">Last name</label>
+      <input type="text" id="last_name" name="last_name" />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required minlength="6" />
+
+      <button type="submit">Register</button>
+    </form>
+    <p id="error-message" class="error"></p>
+    <p class="hint">Already have an account? <a href="index.html">Log in</a></p>
+  </div>
+  <script src="app.js"></script>
+  <script>
+    document.getElementById("register-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        first_name: document.getElementById("first_name").value,
+        last_name: document.getElementById("last_name").value || null,
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value,
+      };
+      const errorEl = document.getElementById("error-message");
+      errorEl.textContent = "";
+
+      try {
+        await register(payload);
+        window.location.href = "index.html";
+      } catch (err) {
+        errorEl.textContent = err.message;
+      }
+    });
+  </script>
+</body>
+</html>

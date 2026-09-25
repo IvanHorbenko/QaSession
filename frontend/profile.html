@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>QA Session Demo — Profile</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="card">
+    <h1>Your profile</h1>
+    <form id="profile-form">
+      <label for="first_name">First name</label>
+      <input type="text" id="first_name" name="first_name" required />
+
+      <label for="last_name">Last name</label>
+      <input type="text" id="last_name" name="last_name" />
+
+      <label>Email</label>
+      <input type="email" id="email" name="email" disabled />
+
+      <button type="submit">Save changes</button>
+    </form>
+    <p id="error-message" class="error"></p>
+    <p id="success-message" class="success"></p>
+    <button id="logout-btn" class="secondary">Log out</button>
+  </div>
+  <script src="app.js"></script>
+  <script>
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      window.location.href = "index.html";
+    }
+
+    async function loadProfile() {
+      try {
+        const profile = await getProfile(token);
+        document.getElementById("first_name").value = profile.first_name;
+        document.getElementById("last_name").value = profile.last_name || "";
+        document.getElementById("email").value = profile.email;
+      } catch (err) {
+        localStorage.removeItem("access_token");
+        window.location.href = "index.html";
+      }
+    }
+
+    document.getElementById("profile-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById("error-message");
+      const successEl = document.getElementById("success-message");
+      errorEl.textContent = "";
+      successEl.textContent = "";
+
+      try {
+        await updateProfile(token, {
+          first_name: document.getElementById("first_name").value,
+          last_name: document.getElementById("last_name").value,
+        });
+        successEl.textContent = "Profile updated.";
+      } catch (err) {
+        errorEl.textContent = err.message;
+      }
+    });
+
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      localStorage.removeItem("access_token");
+      window.location.href = "index.html";
+    });
+
+    loadProfile();
+  </script>
+</body>
+</html>
